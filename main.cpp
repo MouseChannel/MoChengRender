@@ -10,17 +10,10 @@
 int main(int, char**)
 {
 
-    std::vector<Point> p;
-    Point aa;
-    aa.pos.x() = 50;
-    aa.pos.y() = 50;
-    aa.color.r() = 244;
+    char a[6] = { 1, 2, 3, 4, 5 };
+    std::vector<char> b;
+    b.insert(b.end(), a, a + 6);
 
-    for (int i = 0; i < 20; i++) {
-        aa.pos.x() += 2;
-
-        p.push_back(aa);
-    }
     auto& render_manager = SoftRender::RenderManager::Get_Instance();
 
     while (!render_manager->should_exit()) {

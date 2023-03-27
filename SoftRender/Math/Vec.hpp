@@ -137,7 +137,7 @@ struct Vector2 : public Vector<T> {
 template <typename T>
 struct Vector3 : public Vector<T> {
     Vector3()
-        : Vector<T> { { 0, 0 } }
+        : Vector<T> { { 0, 0 ,0} }
     {
     }
     Vector3(T _x, T _y, T _z)
@@ -162,4 +162,34 @@ struct Vector3 : public Vector<T> {
                 T(this->value[0] * b[1] - this->value[1] * b[0]) }
         };
     }
+};
+template <typename T>
+struct Vector4 : public Vector<T> {
+    Vector4()
+        : Vector<T> { { 0, 0, 0, 0 } }
+    {
+    }
+    Vector4(T _x, T _y, T _z, T _w)
+        : Vector<T> { { _x, _y, _z, _w } }
+
+    {
+    }
+    Vector4(Vector<T>&& value)
+        : Vector<T> { { value[0], value[1], value[2], value[3] } }
+
+    {
+    }
+
+    T& x() { return this->value[0]; }
+    T& y() { return this->value[1]; }
+    T& z() { return this->value[2]; }
+    T& w() { return this->value[3]; }
+    // Vector<T> cross(Vector<T> b)
+    // {
+    //     return {
+    //         { T(this->value[1] * b[2] - this->value[2] * b[1]),
+    //             T(this->value[2] * b[0] - this->value[0] * b[2]),
+    //             T(this->value[0] * b[1] - this->value[1] * b[0]) }
+    //     };
+    // }
 };
