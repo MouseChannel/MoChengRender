@@ -54,11 +54,11 @@ struct Position2D : public Vector2<int> {
 struct Color : Vector4<uint8_t> {
 
     Color()
-        : Vector4<uint8_t> { 0, 0, 0, 0 }
+        : Vector4<uint8_t>()
     {
     }
-    Color(uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _w)
-        : Vector4<uint8_t> { _r, _g, _b, _w }
+    Color(uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a)
+        : Vector4<uint8_t> { _r, _g, _b, _a }
 
     {
     }
@@ -69,7 +69,7 @@ struct Color : Vector4<uint8_t> {
     uint8_t& r() { return x(); }
     uint8_t& g() { return y(); }
     uint8_t& b() { return z(); }
-    uint8_t& w() { return w(); }
+    uint8_t& a() { return w(); }
 };
 struct Point {
     Position2D pos;

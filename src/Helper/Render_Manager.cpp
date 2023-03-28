@@ -1,5 +1,7 @@
 #include "SoftRender/Helper/Render_Manager.hpp"
+#include "SoftRender/Image.hpp"
 #include "SoftRender/Math/Math.hpp"
+#include "SoftRender/Texture.hpp"
 #include "SoftRender/Window.hpp"
 
 namespace SoftRender {
@@ -115,4 +117,17 @@ void RenderManager::draw_triangle(Point a, Point b, Point c)
     //     draw_point(Point { { i.x(), i.y() }, { math::lerp(a.color, b.color, c.color, float weight_a, float weight_b, float weight_c) } });
     // }
 }
+void RenderManager::draw_image(std::shared_ptr<Texture> texture)
+{
+    for (int i = 0; i < texture->get_image()->get_width(); i++) {
+        for (int j = 0; j < texture->get_image()->get_height(); j++) {
+            RGBA rgba = texture->get_image()->get_buffer()->get(
+                j * texture->get_image()->get_width() + i);
+            
+           
+            draw_point(Point { { i, j }, { rgba.mR, rgba.mG, rgba.mB, rgba.mA } });
+        }
+    }
+}
+ 
 }

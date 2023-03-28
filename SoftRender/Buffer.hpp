@@ -10,7 +10,7 @@ public:
         : size(data.size())
         , mapped(true)
     {
-       
+
         data = std::move(_data);
     }
     Buffer(uint32_t size, T* _data)
@@ -19,11 +19,15 @@ public:
     {
         data.insert(data.end(), _data, _data + size);
     }
-    ~Buffer();
+    Buffer() = delete;
+    ~Buffer() { }
+    T& operator[](int index) { return data[index]; }
+    [[nodiscard]] auto& get(int index) { return data[index]; }
 
 private:
     uint32_t size;
     std::vector<T> data;
+
     bool mapped = false;
 };
 

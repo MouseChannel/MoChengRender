@@ -5,6 +5,7 @@
 
 namespace SoftRender {
 class Window;
+class Texture;
 class RenderManager : public Instance<RenderManager> {
 
 public:
@@ -13,6 +14,7 @@ public:
     void draw_point(Point point);
     void draw_line(Point start, Point end);
     void draw_triangle(Point a, Point b, Point c);
+    void draw_image(std::shared_ptr<Texture> texture);
     void begin_frame();
     void end_frame();
     bool should_exit();
