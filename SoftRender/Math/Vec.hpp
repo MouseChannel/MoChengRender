@@ -89,6 +89,7 @@ public:
     }
 
     Vector abs() { return std::abs(value); }
+
     T dot(Vector<T> b)
     {
         auto res = 0;
@@ -137,7 +138,7 @@ struct Vector2 : public Vector<T> {
 template <typename T>
 struct Vector3 : public Vector<T> {
     Vector3()
-        : Vector<T> { { 0, 0 ,0} }
+        : Vector<T> { { 0, 0, 0 } }
     {
     }
     Vector3(T _x, T _y, T _z)

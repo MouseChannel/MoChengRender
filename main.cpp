@@ -1,9 +1,10 @@
 
 
 #include "SoftRender/Window.hpp"
-// #include "glfw3.h"
+
 #include "SoftRender/Helper/Render_Manager.hpp"
 #include "SoftRender/Math/Math.hpp"
+#include "SoftRender/Math/Matrix.hpp"
 #include "SoftRender/Math/Vec.hpp"
 #include "SoftRender/Texture.hpp"
 #include <iostream>
@@ -11,9 +12,11 @@
 int main(int, char**)
 {
 
-    char a[6] = { 1, 2, 3, 4, 5 };
-    std::vector<char> b;
-    b.insert(b.end(), a, a + 6);
+    std::unique_ptr<Mat33<int>> a(new Mat33<int>(2));
+    std::unique_ptr<Mat33<int>> b(new Mat33<int>(3));
+    a->set_column(0, { 1, 2, 3 });
+
+    auto res = a->mul(b->get_column(1));
 
     std::shared_ptr<SoftRender::Texture> imag { new SoftRender::Texture("D:/MoChengRender/Asset/goku.jpg") };
     auto& render_manager = SoftRender::RenderManager::Get_Instance();
@@ -53,25 +56,7 @@ int main(int, char**)
         render_manager->end_frame();
     }
 
-    Position2D aaaa { 1, 2 };
-    Position2D bbbb { 2, 2 };
-    Position2D ssss;
-    Color c1;
-    Color c2;
-    Vector3<int> v1 { 1, 2, 3 };
-
-    Vector3<int> v2 { 2, 3, 4 };
-    aaaa[0] = 2;
-    aaaa.y() = 3;
-    auto ee = aaaa.dot(ssss);
-    auto rr = c2.size;
-    // auto eee = c1.cross(c2);
-    auto ssw = v1.cross(v2);
-    Vector2<int> aasd;
-    Vector<float> testt { { 3.0f, 1.0f } };
-    auto square = testt.square();
-    auto le = testt.length();
-    auto ss = testt.normalize();
+    Mat33<Color> moiche(Color);
 
     int s = 0;
 

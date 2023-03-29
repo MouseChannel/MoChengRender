@@ -10,7 +10,6 @@ public:
         : size(data.size())
         , mapped(true)
     {
-
         data = std::move(_data);
     }
     Buffer(uint32_t size, T* _data)
