@@ -1,5 +1,6 @@
 #include "SoftRender/Helper/Render_Manager.hpp"
 #include "SoftRender/Image.hpp"
+#include "SoftRender/Math/DataStruct.hpp"
 #include "SoftRender/Math/Math.hpp"
 #include "SoftRender/Texture.hpp"
 #include "SoftRender/Window.hpp"
@@ -14,14 +15,14 @@ RenderManager::~RenderManager() { }
 bool RenderManager::should_exit() { return m_window->should_exit(); }
 void RenderManager::begin_frame() { m_window->begin_frame(); }
 void RenderManager::end_frame() { m_window->end_frame(); }
-void RenderManager::draw_point(Point pos)
+void RenderManager::draw_point(Point2D pos)
 {
     int r = pos.color.r();
     int g = pos.color.g();
     int b = pos.color.b();
     m_window->draw_point(pos);
 }
-void RenderManager::draw_line(Point start, Point end)
+void RenderManager::draw_line(Point2D start, Point2D end)
 {
     // brensenham
     if (start.pos.x() > end.pos.x()) {
@@ -68,11 +69,11 @@ void RenderManager::draw_line(Point start, Point end)
         } else {
             weight = float(i.x() - start.pos.x()) / float(deltaX);
         }
-        draw_point(Point { .pos { i.x(), i.y() }, .color { math::lerp(start.color, end.color, weight) } });
+        draw_point(Point2D { .pos { i.x(), i.y() }, .color { math::lerp(start.color, end.color, weight) } });
     }
 }
 
-void RenderManager::draw_triangle(Point a, Point b, Point c)
+void RenderManager::draw_triangle(Point2D a, Point2D b, Point2D c)
 {
 
     auto min_x = std::min(std::min(a.pos.x(), b.pos.x()), c.pos.x());
@@ -111,7 +112,7 @@ void RenderManager::draw_triangle(Point a, Point b, Point c)
         auto weight = weights[i];
         auto color = math::lerp(a.color, b.color, c.color, std::get<0>(weight),
             std::get<1>(weight), std::get<2>(weight));
-        draw_point(Point { { pos.x(), pos.y() }, { color } });
+        draw_point(Point2D { { pos.x(), pos.y() }, { color } });
     }
     // for (auto& i : res) {
     //     draw_point(Point { { i.x(), i.y() }, { math::lerp(a.color, b.color, c.color, float weight_a, float weight_b, float weight_c) } });
@@ -123,11 +124,10 @@ void RenderManager::draw_image(std::shared_ptr<Texture> texture)
         for (int j = 0; j < texture->get_image()->get_height(); j++) {
             RGBA rgba = texture->get_image()->get_buffer()->get(
                 j * texture->get_image()->get_width() + i);
-            
-           
-            draw_point(Point { { i, j }, { rgba.mR, rgba.mG, rgba.mB, rgba.mA } });
+
+            draw_point(Point2D { { i, j }, { rgba.mR, rgba.mG, rgba.mB, rgba.mA } });
         }
     }
 }
- 
+
 }

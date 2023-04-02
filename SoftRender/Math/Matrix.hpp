@@ -30,7 +30,7 @@ public:
     }
     void set_row(const int row, Vector<T> row_value)
     {
-        assert(row_value.size == size);
+        assert(row_value.size == get_size());
         for (int i = 0; i < row_value.size; i++) {
             set(row, i, row_value[i]);
         }
@@ -50,7 +50,7 @@ public:
             set(i, column, column_value[i]);
         }
     }
-    Vector<T> get_column(int column)
+    const Vector<T> get_column(int column)
     {
         std::vector<T> res;
         for (int i = 0; i < get_size(); i++) {
@@ -58,6 +58,7 @@ public:
         }
         return res;
     }
+
     Vector<T> operator*(Vector<T> other)
     {
         assert(get_size() == other.size);
@@ -81,9 +82,13 @@ public:
         }
         return res;
     }
+    // Vector<T> operator[](int index)
+    // {
+    //     return get_column(index);
+    // }
     static Mat<T> Identity(int size)
     {
-        return new Mat<T>(size, 1.0f);
+        return Mat<T>(size, 1.0f);
     }
     Mat<T> Transpose()
     {
@@ -92,6 +97,11 @@ public:
             res.set_row(i, get_column(i));
         }
         return res;
+    }
+
+    void scale(Vector<T> v)
+    {
+        assert(v.size == get_size() - 1);
     }
 
     [[nodiscard]] int get_size()
@@ -123,7 +133,7 @@ public:
     {
         Mat<T>::set_row(row, row_value);
     }
-    Vector3<T> get_row(const int row)
+    Vector3<T> get_row(const int row) const
     {
         return Mat<T>::get_row(row);
     }
@@ -131,7 +141,7 @@ public:
     {
         Mat<T>::set_column(column, column_value);
     }
-    Vector3<T> get_column(int column) { return Mat<T>::get_column(column); }
+    const Vector3<T> get_column(int column) { return Mat<T>::get_column(column); }
     Vector3<T> mul(Vector3<T> other) { return (*this) * other; }
     Mat33<T> mul(Mat33<T> other) { return (*this) * other; }
 };
@@ -143,11 +153,19 @@ public:
         : Mat<T>(4, value)
     {
     }
-    void set_row(const int row, Vector4<T> row_value)
+    Mat44(Mat<T>&& mat)
+        : Mat<T>(mat)
+    {
+    }
+    // Vector4<T> operator[](int index)
+    // {
+    //     return get_column(index);
+    // }
+    void set_row(int row, Vector4<T> row_value)
     {
         Mat<T>::set_row(row, row_value);
     }
-    Vector4<T> get_row(const int row)
+    Vector4<T> get_row(int row)
     {
         return Mat<T>::get_row(row);
     }
@@ -156,5 +174,8 @@ public:
         Mat<T>::set_column(column, column_value);
     }
     Vector4<T> get_column(int column) { return Mat<T>::get_column(column); }
+    Vector4<T> mul(Vector4<T> other) { return (*this) * other; }
     Mat44<T> mul(Mat44<T> other) { return (*this) * other; }
+
+private:
 };

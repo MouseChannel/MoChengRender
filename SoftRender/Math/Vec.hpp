@@ -92,7 +92,7 @@ public:
 
     T dot(Vector<T> b)
     {
-        auto res = 0;
+        auto res = 0.0f;
         for (int i = 0; i < size; i++) {
             res += value[i] * b[i];
         }
@@ -141,16 +141,20 @@ struct Vector3 : public Vector<T> {
         : Vector<T> { { 0, 0, 0 } }
     {
     }
+    Vector3(Vector<T> value)
+        : Vector<T> { value }
+    {
+    }
     Vector3(T _x, T _y, T _z)
         : Vector<T> { { _x, _y, _z } }
 
     {
     }
-    Vector3(Vector<T>&& value)
-        : Vector<T> { { value[0], value[1], value[2] } }
+    // Vector3(Vector<T>&& value)
+    //     : Vector<T> { { value[0], value[1], value[2] } }
 
-    {
-    }
+    // {
+    // }
 
     T& x() { return this->value[0]; }
     T& y() { return this->value[1]; }
@@ -170,9 +174,14 @@ struct Vector4 : public Vector<T> {
         : Vector<T> { { 0, 0, 0, 0 } }
     {
     }
+
     Vector4(T _x, T _y, T _z, T _w)
         : Vector<T> { { _x, _y, _z, _w } }
 
+    {
+    }
+    Vector4(Vector3<T> vec3, T v)
+        : Vector<T> { { vec3[0], vec3[1], vec3[2], v } }
     {
     }
     Vector4(Vector<T>&& value)

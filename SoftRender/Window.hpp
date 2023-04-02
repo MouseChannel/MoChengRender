@@ -1,15 +1,19 @@
 #pragma once
 #include "SDL.h"
+#include "SoftRender/Math/DataStruct.hpp"
 #include "SoftRender/Math/Math.hpp"
 #include <vector>
+
 namespace SoftRender {
+const int WEIGHT = 800;
+const int HEIGHT = 600;
 class Window {
 public:
     Window();
     ~Window();
     void Init();
 
-    void draw_point(Point point);
+    void draw_point(Point2D point);
     void begin_frame();
     void end_frame();
     bool should_exit();
