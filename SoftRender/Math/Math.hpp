@@ -69,18 +69,19 @@ public:
     static Mat44<float> view_mat(Vector3<float> position,
         Vector3<float> front)
     {
-        // f == z
+        // camera default position at (0,0,0) and look at (0,0,-1)
+        // f == -z
         // r == x
         // u == y
         Vector3<float> top = { 0, 1, 0 };
         auto t_m = translate_matrix(position * (-1.0f));
         Vector3<float> f = front.normalize();
-        Vector3<float> r = top.cross(front).normalize();
-        Vector3<float> u = f.cross(r);
+        Vector3<float> r = front.cross(top).normalize();
+        Vector3<float> u = r.cross(f);
         Mat44<float> r_m = Mat<float>::Identity(4);
         r_m.set_row(0, { r, 0 });
         r_m.set_row(1, { u, 0 });
-        r_m.set_row(2, { f, 0 });
+        r_m.set_row(2, { -f, 0 });
         return r_m.mul(t_m);
     }
     static Mat44<float> orthographic(float left, float right, float top,
@@ -93,15 +94,41 @@ public:
         // auto dd = s_m.mul(t_m);
         return s_m.mul(t_m);
     }
+    static Mat44<float> perspective(float fov, float aspect, float near,
+        float far)
+    {
+        const float wei = 3.14f / 180;
+
+        auto tan_half = std::tan(wei * fov / 2.0f);
+        Mat44<float> res { 0 };
+        res.set(0, 0, 1.0f / (aspect * tan_half));
+        res.set(1, 1, 1.0f/tan_half);
+        res.set(2, 2, (-far - near) / (far - near));
+        res.set(2, 3, (-2.0f * far * near) / (far - near));
+        res.set(3, 2, -1.0f);
+        return res;
+    }
     static Mat44<float> perspective(float left, float right, float top,
         float bottom, float near, float far)
     {
         Mat44<float> persp_to_ortho = Mat44<float>::Identity(4);
         persp_to_ortho.set(0, 0, near);
-        persp_to_ortho.set(0, 0, near);
+        persp_to_ortho.set(1, 1, near);
         persp_to_ortho.set(3, 2, 1);
         persp_to_ortho.set_row(2, { 0, 0, near + far, -near * far });
+        persp_to_ortho.set(3, 3, 0);
+        auto orr = orthographic(left, right, top, bottom, near, far);
         return orthographic(left, right, top, bottom, near, far).mul(persp_to_ortho);
+
+        Mat44<float> persp { 1 };
+        persp.set_row(
+            0, { 2.0f / (right - left), 0, 0, (-right - left) / (right - left) });
+        persp.set_row(
+            1, { 0, 2.0f / (top - bottom), 0, (-top - bottom) / (top - bottom) });
+        persp.set_row(
+            2, { 0, 0, -2.0f / (far - near), (-far - near) / (far - near) });
+        persp.set_row(3, { 0, 0, 0, 1 });
+        return persp;
     }
     static Mat44<float> screen_matrix(const int width, const int height)
     {

@@ -46,6 +46,15 @@ public:
         }
         return res;
     }
+    Vector operator-()
+    {
+
+        std::vector<T> res;
+        for (int i = 0; i < size; i++) {
+            res.emplace_back(value[i] * T(-1));
+        }
+        return res;
+    }
 
     Vector operator*(float weight)
     {
