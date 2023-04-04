@@ -1,5 +1,5 @@
 #include "SoftRender/Window.hpp"
-#include "SoftRender/Helper/Render_Manager.hpp"
+#include "SoftRender/Helper/Raster_Manager.hpp"
 namespace SoftRender {
 
 Window::Window()

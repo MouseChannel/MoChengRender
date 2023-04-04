@@ -22,6 +22,11 @@ public:
 
         size = value.size();
     }
+    T& get(int index)
+    {
+        assert(index >= 0 && index < size);
+        return value[index];
+    }
     T& operator[](const int index)
     {
         assert(index >= 0 && index < size);
@@ -125,7 +130,7 @@ public:
 template <Check T>
 struct Vector2 : public Vector<T> {
     Vector2()
-        : Vector<T> { { 0, 0 } }
+        : Vector<T> { { (T)0, (T)0 } }
     {
     }
     Vector2(T _x, T _y)
@@ -133,10 +138,11 @@ struct Vector2 : public Vector<T> {
 
     {
     }
-    Vector2(Vector<T>&& value)
-        : Vector<T> { { value[0], value[1] } }
+    Vector2(Vector<T> value)
+        : Vector<T> { value }
 
     {
+        assert(value.size == 2);
     }
 
     T& x() { return this->value[0]; }
@@ -153,6 +159,7 @@ struct Vector3 : public Vector<T> {
     Vector3(Vector<T> value)
         : Vector<T> { value }
     {
+        assert(value.size == 3);
     }
     Vector3(T _x, T _y, T _z)
         : Vector<T> { { _x, _y, _z } }
@@ -193,10 +200,10 @@ struct Vector4 : public Vector<T> {
         : Vector<T> { { vec3[0], vec3[1], vec3[2], v } }
     {
     }
-    Vector4(Vector<T>&& value)
-        : Vector<T> { { value[0], value[1], value[2], value[3] } }
-
+    Vector4(Vector<T> value)
+        : Vector<T> { value }
     {
+        assert(value.size == 4);
     }
 
     T& x() { return this->value[0]; }
