@@ -70,6 +70,10 @@ struct UV : Vector2<float> {
         : Vector2<float> { x, y }
     {
     }
+    UV(Vector<float> value)
+        : Vector2<float> { value }
+    {
+    }
     UV(Vector2<float> value)
         : Vector2<float> { value[0], value[1] }
     {
@@ -86,10 +90,12 @@ struct Normal : Vector3<float> {
 
     {
     }
+    Normal(Vector<float> value)
+        : Vector3<float> { value }
+    {
+    }
     Normal(Vector3<float> value)
-        : Vector3<float> {
-            value[0], value[1], value[2]
-        }
+        : Vector3<float> { value[0], value[1], value[2] }
     {
     }
 };

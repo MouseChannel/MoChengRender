@@ -176,6 +176,5 @@ public:
     Vector4<T> get_column(int column) { return Mat<T>::get_column(column); }
     Vector4<T> mul(Vector4<T> other) { return (*this) * other; }
     Mat44<T> mul(Mat44<T> other) { return (*this) * other; }
-
-private:
 };
+using mat4f = Mat44<float>;

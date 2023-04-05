@@ -31,27 +31,27 @@ public:
     {
         return a * weight_a + b * weight_b + c * weight_c;
     }
-    static Mat44<float> translate_matrix(Vector3<float> v)
+    static mat4f translate_matrix(Vector3<float> v)
     {
 
-        Mat44<float> translate_matrix { 1.0f };
+        mat4f translate_matrix { 1.0f };
         translate_matrix.set_column(3, { v, 1.0f });
 
         return translate_matrix;
     }
-    static Mat44<float> scale_matrix(Vector3<float> v)
+    static mat4f scale_matrix(Vector3<float> v)
     {
-        Mat44<float> scale_matrix { 1.0f };
+        mat4f scale_matrix { 1.0f };
         for (int i = 0; i < 3; i++) {
             scale_matrix.set(i, i, v[i]);
         }
         return scale_matrix;
     }
-    static Mat44<float> rotate_matrix(float angle, Vector3<float> dir)
+    static mat4f rotate_matrix(float angle, Vector3<float> dir)
     {
         auto axis = dir.normalize();
         auto x = axis[0], y = axis[1], z = axis[2];
-        Mat44<float> res = Mat<float>::Identity(4);
+        mat4f res = Mat<float>::Identity(4);
         auto sin = std::sin(angle);
         auto cos = std::cos(angle);
         auto one_minux_cos = 1.0f - cos;
@@ -66,7 +66,7 @@ public:
         res.set(2, 2, z * z * one_minux_cos + cos);
         return res;
     }
-    
+
     /**
      * @brief camera default position at (0,0,0) and look at (0,0,-1)
      *
@@ -74,7 +74,7 @@ public:
      * r == x
      * u == y
      */
-    static Mat44<float> view_mat(Vector3<float> position,
+    static mat4f view_mat(Vector3<float> position,
         Vector3<float> front)
     {
 
@@ -83,13 +83,13 @@ public:
         Vector3<float> f = front.normalize();
         Vector3<float> r = front.cross(top).normalize();
         Vector3<float> u = r.cross(f);
-        Mat44<float> r_m = Mat<float>::Identity(4);
+        mat4f r_m = Mat<float>::Identity(4);
         r_m.set_row(0, { r, 0 });
         r_m.set_row(1, { u, 0 });
         r_m.set_row(2, { -f, 0 });
         return r_m.mul(t_m);
     }
-    static Mat44<float> orthographic(float left, float right, float top,
+    static mat4f orthographic(float left, float right, float top,
         float bottom, float near, float far)
     {
         auto t_m = translate_matrix(
@@ -99,13 +99,13 @@ public:
 
         return s_m.mul(t_m);
     }
-    static Mat44<float> perspective(float fov, float aspect, float near,
+    static mat4f perspective(float fov, float aspect, float near,
         float far)
     {
         const float wei = 3.14f / 180;
 
         auto tan_half = std::tan(wei * fov / 2.0f);
-        Mat44<float> res { 0 };
+        mat4f res { 0 };
         res.set(0, 0, 1.0f / (aspect * tan_half));
         res.set(1, 1, 1.0f / tan_half);
         res.set(2, 2, (-far - near) / (far - near));
@@ -113,10 +113,11 @@ public:
         res.set(3, 2, -1.0f);
         return res;
     }
-    static Mat44<float> perspective(float left, float right, float top,
+    static mat4f perspective(float left, float right, float top,
         float bottom, float near, float far)
     {
-        Mat44<float> persp_to_ortho = Mat44<float>::Identity(4);
+        assert(near > far && near < 0.0f && far < 0.0f);
+        mat4f persp_to_ortho = mat4f::Identity(4);
         persp_to_ortho.set(0, 0, near);
         persp_to_ortho.set(1, 1, near);
         persp_to_ortho.set(3, 2, 1);
@@ -125,9 +126,9 @@ public:
         auto orr = orthographic(left, right, top, bottom, near, far);
         return orthographic(left, right, top, bottom, near, far).mul(persp_to_ortho);
     }
-    static Mat44<float> screen_matrix(const int width, const int height)
+    static mat4f screen_matrix(const int width, const int height)
     {
-        Mat44<float> res { 1 };
+        mat4f res { 1 };
         res.set(0, 0, width / 2.0f);
         res.set(1, 1, height / 2.0f);
         res.set(2, 2, 1 / 2.0f);

@@ -17,11 +17,13 @@ public:
         std::unique_ptr<VertexBuffers> buffers);
     void bind_shader(std::unique_ptr<Shader> vertex_shader, std::unique_ptr<Shader> fragment_shader);
     void vertex_shader_stage();
-    void raster(Mat44<float> screen_matrix);
+    void clip();
+    void raster(mat4f screen_matrix);
 
 private:
     std::unique_ptr<Shader> vertex_shader_data { nullptr },
         fragment_shader_data { nullptr };
     std::vector<Point3D> points;
+    std::vector<Point3D> sutherlandHodgman(std::vector<Point3D>);
 };
 }

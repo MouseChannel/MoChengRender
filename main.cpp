@@ -29,52 +29,33 @@ int main(int, char**)
     std::shared_ptr<SoftRender::Texture> imag { new SoftRender::Texture("D:/MoChengRender/Asset/goku.jpg") };
     auto& raster_manager = SoftRender::RasterManager::Get_Instance();
     float angle = 0.00f;
-    float car_pos = 3.0f;
+    float car_pos = 5.0f;
 
     while (!raster_manager->should_exit()) {
         raster_manager->begin_frame();
 
         //---
-        angle += 0.1f;
-        Mat44<float> translate_matrix = Mat44<float>::Identity(4);
+        // angle += 0.1f;
+        // car_pos -= 0.02f;
+        mat4f translate_matrix = mat4f::Identity(4);
         auto model_matrix = translate_matrix.mul(math::rotate_matrix(angle, { 0, 1, 0 }));
         Vector3<float> camera_pos { 0, 0, car_pos };
 
-        Vector3<float> front { 0, 0, -1 };
+        Vector3<float> front { 0, 0, -1.0f };
         auto view_matrix = math::view_mat(camera_pos, front);
-        auto project_matrix = math::perspective(-3, 3, -3, 3, 1.0f, -1.0f);
+        auto project_matrix = math::perspective(-3, 3, 3, -3, -1.0f, -10.0f);
+        // auto project_matrix = math::perspective(60.0f, (float)4 / (float)3, 0.1f, 10.0f);
+        // auto project_matrix = math::orthographic(-3, 3, 3, -3, 1.0f, -2.0f);
 
-        auto screen_matrix = math::screen_matrix(SoftRender::WEIGHT, SoftRender::HEIGHT);
-#ifdef npipeline
+        auto screen_matrix
+            = math::screen_matrix(SoftRender::WEIGHT, SoftRender::HEIGHT);
 
-        raster_manager->draw_point(Point2D { { (int)mid.pos.x(), (int)mid.pos.y() }, { 255, 255, 255, 255 } });
-
-        auto mvp = project_matrix.mul(view_matrix).mul(model_matrix);
-
-        auto triangle_a = mvp.mul({ a.pos.x(), a.pos.y(), a.pos.z(), 1 });
-        normalized(triangle_a);
-        triangle_a = screen_matrix.mul(triangle_a);
-        auto triangle_b = mvp.mul({ b.pos.x(), b.pos.y(), b.pos.z(), 1 });
-        normalized(triangle_b);
-        triangle_b = screen_matrix.mul(triangle_b);
-        auto triangle_c = mvp.mul({ c.pos.x(), c.pos.y(), c.pos.z(), 1 });
-        normalized(triangle_c);
-        triangle_c = screen_matrix.mul(triangle_c);
-        Point2D aa { { (int)triangle_a.x(), (int)triangle_a.y() },
-            { 255, 0, 0, 255 } };
-        Point2D bb { { (int)triangle_b.x(), (int)triangle_b.y() },
-            { 0, 255, 0, 255 } };
-        Point2D cc { { (int)triangle_c.x(), (int)triangle_c.y() },
-            { 0, 0, 255, 255 } };
-
-        raster_manager->draw_triangle(aa, bb, cc);
-#endif // DEBUG
-       // pipeline
+        // pipeline
         auto& render_manager = RenderManager::Get_Instance();
         std::unique_ptr<VertexBuffers> position_buf {
-            new VertexBuffers({ { { -2, 0, 0 } },
+            new VertexBuffers({ { { -20, 0, 0 } },
                 { { 2, 0, 0 } },
-                { { 0, 2, 0 } } })
+                { { 0, 1, 0 } } })
         };
 
         render_manager->bind_vertex_buffer(Vertex_Buffer_Type::position, std::move(position_buf));
@@ -85,6 +66,7 @@ int main(int, char**)
         std::unique_ptr<Shader> vertex_shader { new Shader(model_matrix, view_matrix, project_matrix, screen_matrix) };
         render_manager->bind_shader(std::move(vertex_shader), nullptr);
         render_manager->vertex_shader_stage();
+        render_manager->clip();
         render_manager->raster(screen_matrix);
 
         raster_manager->end_frame();

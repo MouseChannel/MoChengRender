@@ -192,7 +192,7 @@ struct Vector4 : public Vector<T> {
     }
 
     Vector4(T _x, T _y, T _z, T _w)
-        : Vector<T> { { _x, _y, _z, _w } }
+        : Vector<T> { { (T)_x, (T)_y, (T)_z, (T)_w } }
 
     {
     }

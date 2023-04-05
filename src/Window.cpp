@@ -32,6 +32,7 @@ void Window::draw_point(Point2D point)
 {
     SDL_SetRenderDrawColor(m_renderer, point.color.r(), point.color.g(), point.color.b(), 255);
     SDL_RenderDrawPoint(m_renderer, point.pos.x(), HEIGHT - point.pos.y());
+ 
 }
 void Window::begin_frame()
 {
