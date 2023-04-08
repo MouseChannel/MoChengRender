@@ -25,6 +25,33 @@ void normalized(auto& x)
 }
 int main(int, char**)
 {
+    SDL_log(1.0f);
+    struct TT {
+        int a;
+        int b;
+        // bool operator==(TT other) const
+        // {
+        //     SDL_log(1.0f);
+        //     std::cout << "==" << std::endl;
+        //     return a == other.a;
+        // }
+        bool operator<(TT other) const
+        {
+            std::cout << "<==>" << std::endl;
+            return a < other.a;
+        }
+    };
+    struct TTT : public TT {
+        int c;
+    };
+    std::map<TTT, int> mm;
+    TTT t1 { 1, 2 }, t2 { 2, 1 };
+    mm[t1] = 1;
+    mm[t2] = 2;
+    mm.insert({ TTT { 3, 2 }, 1 });
+    if (auto ee = mm.find(TTT { 4, 1 }); ee == mm.end()) {
+        int r = 0;
+    }
 
     std::shared_ptr<SoftRender::Texture> imag { new SoftRender::Texture("D:/MoChengRender/Asset/goku.jpg") };
     auto& raster_manager = SoftRender::RasterManager::Get_Instance();
@@ -35,7 +62,7 @@ int main(int, char**)
         raster_manager->begin_frame();
 
         //---
-        // angle += 0.1f;
+        angle += 0.1f;
         // car_pos -= 0.02f;
         mat4f translate_matrix = mat4f::Identity(4);
         auto model_matrix = translate_matrix.mul(math::rotate_matrix(angle, { 0, 1, 0 }));
@@ -53,9 +80,9 @@ int main(int, char**)
         // pipeline
         auto& render_manager = RenderManager::Get_Instance();
         std::unique_ptr<VertexBuffers> position_buf {
-            new VertexBuffers({ { { -20, 0, 0 } },
-                { { 2, 0, 0 } },
-                { { 0, 1, 0 } } })
+            new VertexBuffers({ { { -3, 0, 0 } },
+                { { -2, 4, 0 } },
+                { { 2, 0, 0 } } })
         };
 
         render_manager->bind_vertex_buffer(Vertex_Buffer_Type::position, std::move(position_buf));
@@ -63,12 +90,29 @@ int main(int, char**)
             { { { 255, 0, 0, 255 } }, { { 0, 255, 0, 255 } }, { { 0, 0, 255, 255 } } }) };
         render_manager->bind_vertex_buffer(Vertex_Buffer_Type ::color,
             std::move(color_buf));
-        std::unique_ptr<Shader> vertex_shader { new Shader(model_matrix, view_matrix, project_matrix, screen_matrix) };
-        render_manager->bind_shader(std::move(vertex_shader), nullptr);
+        std::unique_ptr<VertexBuffers> uv_buf {
+            new VertexBuffers({ { { 0, 0 } },
+                { { 0, 1 } },
+                { { 1, 1 } } })
+        };
+        render_manager->bind_vertex_buffer(Vertex_Buffer_Type ::uv,
+            std::move(uv_buf));
+
+        std::unique_ptr<Shader> vertex_shader { new Shader(
+            model_matrix, view_matrix, project_matrix, screen_matrix) };
+
+        std::unique_ptr<Shader> fragment_shader { new Shader(
+            model_matrix, view_matrix, project_matrix, screen_matrix) };
+
+        render_manager->bind_shader(std::move(vertex_shader), std::move(fragment_shader));
         render_manager->vertex_shader_stage();
         render_manager->clip();
-        render_manager->raster(screen_matrix);
-
+        render_manager->ndc();
+        render_manager->screen_map(screen_matrix);
+        render_manager->raster();
+        render_manager->perspective_fix();
+        render_manager->fragment_shader_stage();
+        render_manager->draw();
         raster_manager->end_frame();
     }
 

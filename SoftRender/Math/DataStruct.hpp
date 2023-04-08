@@ -1,4 +1,5 @@
 #pragma once
+#include "SoftRender/Helper/ConstData.hpp"
 #include "SoftRender/Math/Vec.hpp"
 
 struct Position3D : public Vector3<float> {
@@ -39,6 +40,10 @@ struct Position2D : public Vector2<int> {
     Position2D(Position3D v)
         : Vector2<int> { (int)v[0], (int)v[1] }
     {
+    }
+    bool operator<(Position2D other) const
+    {
+        return value[0] * WIDTH + value[1] < other.x() * WIDTH + other.y();
     }
 };
 struct Color : Vector4<uint8_t> {
@@ -102,16 +107,75 @@ struct Normal : Vector3<float> {
 
 struct Point3D {
     Vector4<float> pos;
-    Color color;
+    Vector4<float> color;
     UV uv;
     Normal normal;
+    float depth;
+    Point3D operator*(float weight)
+    {
+        return Point3D {
+            .pos { pos },
+            .color { color * weight },
+            .uv { uv * weight },
+            .normal { normal * weight },
+            .depth = depth * weight
+        };
+    }
+    Point3D operator+(Point3D other)
+    {
+        return Point3D {
+            .pos { pos },
+            .color { color + other.color },
+            .uv { uv + other.uv },
+            .normal { normal + other.normal },
+            .depth = depth + other.depth
+        };
+    }
 };
-struct Point2D {
-    // Point2D(Point3D v)
-    //     : pos { (int)v.pos.x(), (int)v.pos.y() }
-    //     , color { v.color }
+struct Fragment {
+
+    Vector2<int> pos;
+    Vector4<float> color;
+    UV uv;
+    float depth;
+    bool operator<(Fragment other) const
+    {
+
+        return pos.value[0] * WIDTH + pos.value[1] < other.pos.x() * WIDTH + other.pos.y();
+    }
+    // Fragment() = default;
+    // Fragment(Vector2<int> pos, Color color, UV uv, float depth)
+    //     : pos { pos }
+    //     , color { color }
+    //     , uv(uv)
+    //     , depth { depth }
     // {
     // }
+    // Fragment(Point3D point3d)
+    //     : pos { (int)point3d.pos.x(), (int)point3d.pos.y() }
+    //     , color { point3d.color }
+    //     , uv(point3d.uv)
+    //     , depth { point3d.pos.z() }
+    // {
+    // }
+    // static Fragment lerp(Fragment a, Fragment b, Fragment c, float weight_a,
+    //     float weight_b, float weight_c)
+    // {
+    //     //   return
+    // }
+    // Fragment operator*(float weight)
+    // {
+    //     return Fragment {   pos * weight, color * weight, uv * weight, depth * weight };
+    // }
+    // Fragment operator+(Fragment other)
+    // {
+    //     return Fragment { pos + other.pos, color + other.color, uv + other.uv, depth + other.depth };
+    // }
+};
+struct Pixel {
     Position2D pos;
-    Color color;
+    Vector4<float> color;
+};
+struct RR {
+    float r, g, b, a;
 };

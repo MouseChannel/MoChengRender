@@ -7,7 +7,12 @@
 
 #include <stdint.h>
 #include <variant>
+template <typename T>
+concept LerpObject = requires(T a, T b, float weight) {
+                         a + b;
 
+                         a* weight;
+                     };
 class math {
 public:
     template <typename T>
@@ -19,19 +24,40 @@ public:
         a = c;
     }
 
-    template <Check T>
+    template <LerpObject T>
     static T lerp(T x1, T x2, float weight)
     {
-        return x1 + (x2 - x1) * weight;
+        return x1 * (1.0f - weight) + x2 * weight;
     }
 
-    template <Check T>
+    template <LerpObject T>
     static T lerp(T a, T b, T c, float weight_a, float weight_b,
         float weight_c)
     {
+        // assert()
         return a * weight_a + b * weight_b + c * weight_c;
     }
-    static mat4f translate_matrix(Vector3<float> v)
+
+    template <LerpObject T>
+    static T lerp(std::array<T, 3> value, std::array<float, 3> weights)
+    {
+        return lerp(value[0], value[1], value[2], weights[0], weights[1], weights[2]);
+    }
+    template <LerpObject T>
+    static T lerp(std::vector<T> value, std::vector<float> weights)
+    {
+        assert(value.size() == 3 && weights.size() == 3);
+        return lerp(value[0], value[1], value[2], weights[0], weights[1], weights[2]);
+    }
+    template <LerpObject T>
+    static T lerp(T a, T b, T c, std::array<float, 3> weights)
+    {
+
+        return lerp(a, b, c, weights[0], weights[1], weights[2]);
+    }
+
+    static mat4f
+    translate_matrix(Vector3<float> v)
     {
 
         mat4f translate_matrix { 1.0f };

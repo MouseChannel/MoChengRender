@@ -32,6 +32,16 @@ public:
         assert(index >= 0 && index < size);
         return value[index];
     }
+    bool operator==(Vector other)
+    {
+        assert(size == other.size);
+        for (int i = 0; i < size; i++) {
+            if (value[i] != other.value[i])
+                return false;
+        }
+        return true;
+    }
+
     Vector operator+(Vector other)
     {
         assert(size == other.size);

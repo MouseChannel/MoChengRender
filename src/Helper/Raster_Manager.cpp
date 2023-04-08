@@ -15,14 +15,14 @@ RasterManager::~RasterManager() { }
 bool RasterManager::should_exit() { return m_window->should_exit(); }
 void RasterManager::begin_frame() { m_window->begin_frame(); }
 void RasterManager::end_frame() { m_window->end_frame(); }
-void RasterManager::draw_point(Point2D pos)
+void RasterManager::draw_point(Pixel pos)
 {
-    int r = pos.color.r();
-    int g = pos.color.g();
-    int b = pos.color.b();
+    // int r = pos.color.r();
+    // int g = pos.color.g();
+    // int b = pos.color.b();
     m_window->draw_point(pos);
 }
-void RasterManager::draw_line(Point2D start, Point2D end)
+void RasterManager::draw_line(Pixel start, Pixel end)
 {
     // brensenham
     if (start.pos.x() > end.pos.x()) {
@@ -69,13 +69,18 @@ void RasterManager::draw_line(Point2D start, Point2D end)
         } else {
             weight = float(i.x() - start.pos.x()) / float(deltaX);
         }
-        draw_point(Point2D { .pos { i.x(), i.y() }, .color { math::lerp(start.color, end.color, weight) } });
+        draw_point(Pixel { .pos { i.x(), i.y() }, .color { math::lerp(start.color, end.color, weight) } });
     }
 }
 
-void RasterManager::draw_triangle(Point2D a, Point2D b, Point2D c)
+std::vector<std::pair<Point3D, float>> RasterManager::raster_triangle(std::pair<Point3D, float> a_and_w, std::pair<Point3D, float> b_and_w, std::pair<Point3D, float> c_and_w)
 {
-
+    auto& a = a_and_w.first;
+    auto& b = b_and_w.first;
+    auto& c = c_and_w.first;
+    auto& a_w = a_and_w.second;
+    auto& b_w = b_and_w.second;
+    auto& c_w = c_and_w.second;
     auto min_x = std::min(std::min(a.pos.x(), b.pos.x()), c.pos.x());
     auto max_x = std::max(std::max(a.pos.x(), b.pos.x()), c.pos.x());
     auto min_y = std::min(std::min(a.pos.y(), b.pos.y()), c.pos.y());
@@ -85,7 +90,8 @@ void RasterManager::draw_triangle(Point2D a, Point2D b, Point2D c)
     auto e2 = Vector2 { float(c.pos.x() - b.pos.x()), float(c.pos.y() - b.pos.y()) };
     auto sum_area = std::abs(e1.cross(e2));
     std::vector<Position2D> res;
-    std::vector<std::tuple<float, float, float>> weights;
+    std::vector<std::array<float, 3>> weights;
+
     for (int i = min_x; i <= max_x; i++) {
         for (int j = min_y; j <= max_y; j++) {
             auto _a = Vector2 { float(a.pos.x() - i), float(a.pos.y() - j) };
@@ -94,7 +100,8 @@ void RasterManager::draw_triangle(Point2D a, Point2D b, Point2D c)
             auto cross_1 = _a.cross(_b);
             auto cross_2 = _b.cross(_c);
             auto cross_3 = _c.cross(_a);
-            if (cross_1 >= 0 && cross_2 >= 0 && cross_3 >= 0 || cross_1 <= 0 && cross_2 <= 0 && cross_3 <= 0) {
+            if (cross_1 >= 0 && cross_2 >= 0 && cross_3 >= 0
+                || cross_1 <= 0 && cross_2 <= 0 && cross_3 <= 0) {
                 auto area_a = std::abs(_b.cross(_c));
                 auto area_b = std::abs(_a.cross(_c));
                 auto area_c = std::abs(_a.cross(_b));
@@ -103,20 +110,22 @@ void RasterManager::draw_triangle(Point2D a, Point2D b, Point2D c)
                 auto weight_c = area_c / sum_area;
 
                 res.emplace_back(i, j);
-                weights.emplace_back(std::make_tuple(weight_a, weight_b, weight_c));
+                weights.emplace_back(std::array<float, 3> { weight_a, weight_b, weight_c });
             }
         }
     }
+    std::vector<std::pair<Point3D, float>> rester_output;
     for (int i = 0; i < res.size(); i++) {
-        auto pos = res[i];
+        // auto pos = res[i];
         auto weight = weights[i];
-        auto color = math::lerp(a.color, b.color, c.color, std::get<0>(weight),
-            std::get<1>(weight), std::get<2>(weight));
-        draw_point(Point2D { { pos.x(), pos.y() }, { color } });
+
+        auto cur_point = math::lerp(a, b, c, weight);
+        cur_point.pos = { (float)res[i].x(), (float)res[i].y(), cur_point.pos.z(), 1 };
+        rester_output.emplace_back(cur_point, math::lerp(a_w, b_w, c_w, weight));
+
+        // draw_point(Pixel { { (int)cur_point.pos.x(), (int)cur_point.pos.y() }, { cur_point.color } });
     }
-    // for (auto& i : res) {
-    //     draw_point(Point { { i.x(), i.y() }, { math::lerp(a.color, b.color, c.color, float weight_a, float weight_b, float weight_c) } });
-    // }
+    return rester_output;
 }
 void RasterManager::draw_image(std::shared_ptr<Texture> texture)
 {
@@ -125,7 +134,7 @@ void RasterManager::draw_image(std::shared_ptr<Texture> texture)
             RGBA rgba = texture->get_image()->get_buffer()->get(
                 j * texture->get_image()->get_width() + i);
 
-            draw_point(Point2D { { i, j }, { rgba.mR, rgba.mG, rgba.mB, rgba.mA } });
+            draw_point(Pixel { { i, j }, { (float)rgba.mR, (float)rgba.mG, (float)rgba.mB, (float)rgba.mA } });
         }
     }
 }

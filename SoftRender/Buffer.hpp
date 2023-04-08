@@ -8,7 +8,7 @@ template <typename T>
 class Buffer {
 public:
     Buffer(std::vector<T>&& _data)
-        : size(data.size())
+        : size(_data.size())
         , mapped(true)
     {
         data = std::move(_data);

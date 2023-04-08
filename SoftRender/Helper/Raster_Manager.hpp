@@ -13,9 +13,9 @@ class RasterManager : public Instance<RasterManager> {
 public:
     RasterManager();
     ~RasterManager();
-    void draw_point(Point2D point);
-    void draw_line(Point2D start, Point2D end);
-    void draw_triangle(Point2D a, Point2D b, Point2D c);
+    void draw_point(Pixel point);
+    void draw_line(Pixel start, Pixel end);
+    std::vector<std::pair<Point3D, float>> raster_triangle(std::pair<Point3D, float> a_and_w, std::pair<Point3D, float> b_and_w, std::pair<Point3D, float> c_and_w);
     void draw_image(std::shared_ptr<Texture> texture);
     void begin_frame();
     void end_frame();

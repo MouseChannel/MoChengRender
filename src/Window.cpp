@@ -28,11 +28,10 @@ bool Window::should_exit()
     }
     return false;
 }
-void Window::draw_point(Point2D point)
+void Window::draw_point(Pixel point)
 {
-    SDL_SetRenderDrawColor(m_renderer, point.color.r(), point.color.g(), point.color.b(), 255);
+    SDL_SetRenderDrawColor(m_renderer, point.color.x(), point.color.y(), point.color.z(), 255);
     SDL_RenderDrawPoint(m_renderer, point.pos.x(), HEIGHT - point.pos.y());
- 
 }
 void Window::begin_frame()
 {

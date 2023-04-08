@@ -13,7 +13,7 @@ public:
     ~Window();
     void Init();
 
-    void draw_point(Point2D point);
+    void draw_point(Pixel point);
     void begin_frame();
     void end_frame();
     bool should_exit();
