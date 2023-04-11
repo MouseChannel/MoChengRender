@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SoftRender/Math/Vec.hpp"
+#include "Math/Vec.hpp"
 #include <string>
 #include <string_view>
 

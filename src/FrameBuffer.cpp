@@ -1,4 +1,4 @@
-#include "SoftRender/FrameBuffer.hpp"
+#include "FrameBuffer.hpp"
 
 namespace SoftRender {
 FrameBuffer::FrameBuffer(int weight, int height)

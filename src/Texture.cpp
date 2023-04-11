@@ -1,7 +1,7 @@
-#include "SoftRender/Texture.hpp"
+#include "Texture.hpp"
 
-#include "SoftRender/Image.hpp"
-#include "SoftRender/Math/Math.hpp"
+#include "Image.hpp"
+#include "Math/Math.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "Tools/stb_image.h"
 

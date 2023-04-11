@@ -1,8 +1,9 @@
 #pragma once
+#include "Math/DataStruct.hpp"
+#include "Math/Math.hpp"
 #include "SDL.h"
-#include "SoftRender/Math/DataStruct.hpp"
-#include "SoftRender/Math/Math.hpp"
 #include <vector>
+
 
 namespace SoftRender {
 const int WEIGHT = 800;

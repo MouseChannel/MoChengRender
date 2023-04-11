@@ -1,4 +1,4 @@
-#include "SoftRender/VertexObjectArray.hpp"
+#include "VertexObjectArray.hpp"
 
 namespace SoftRender {
 VertexObjectArray::VertexObjectArray() { }

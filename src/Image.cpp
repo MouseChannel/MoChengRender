@@ -1,6 +1,6 @@
-#include "SoftRender/Image.hpp"
+#include "Image.hpp"
 
-#include "SoftRender/Buffer.hpp"
+#include "Buffer.hpp"
 
 namespace SoftRender {
 Image::Image(RGBA* data, size_t width, size_t height)

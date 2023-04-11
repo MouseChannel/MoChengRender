@@ -1,6 +1,6 @@
 #pragma once
-#include "SoftRender/Helper/ConstData.hpp"
-#include "SoftRender/Math/Vec.hpp"
+#include "Helper/ConstData.hpp"
+#include "Math/Vec.hpp"
 
 struct Position3D : public Vector3<float> {
 
@@ -105,30 +105,30 @@ struct Normal : Vector3<float> {
     }
 };
 
-struct Point3D {
+struct Vertex {
     Vector4<float> pos;
     Vector4<float> color;
     UV uv;
     Normal normal;
-    float depth;
-    Point3D operator*(float weight)
+    // float depth;
+    Vertex operator*(float weight)
     {
-        return Point3D {
+        return Vertex {
             .pos { pos },
             .color { color * weight },
             .uv { uv * weight },
             .normal { normal * weight },
-            .depth = depth * weight
+            // .depth = depth * weight
         };
     }
-    Point3D operator+(Point3D other)
+    Vertex operator+(Vertex other)
     {
-        return Point3D {
+        return Vertex {
             .pos { pos },
             .color { color + other.color },
             .uv { uv + other.uv },
             .normal { normal + other.normal },
-            .depth = depth + other.depth
+            // .depth = depth + other.depth
         };
     }
 };

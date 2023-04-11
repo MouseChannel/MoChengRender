@@ -1,6 +1,6 @@
-// #include "SoftRender/Description.hpp"
+// #include "Description.hpp"
 #pragma once
-#include "SoftRender/Math/DataStruct.hpp"
+#include "Math/DataStruct.hpp"
 #include <map>
 #include <memory>
 #include <vector>

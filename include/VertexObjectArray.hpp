@@ -1,8 +1,8 @@
 #pragma once
-#include "SoftRender/BindingAttribute.hpp"
-#include "SoftRender/Buffer.hpp"
-#include "SoftRender/Helper/Instance.hpp"
-#include "SoftRender/Math/Vec.hpp"
+#include "BindingAttribute.hpp"
+#include "Buffer.hpp"
+#include "Helper/Instance.hpp"
+#include "Math/Vec.hpp"
 #include <map>
 
 namespace SoftRender {

@@ -1,5 +1,5 @@
 #pragma once
-#include "SoftRender/Image.hpp"
+#include "Image.hpp"
 #include "string_view"
 #include <memory>
 

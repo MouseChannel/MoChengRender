@@ -2,8 +2,8 @@
 
 #include "SDL.h"
 
-#include "SoftRender/Math/Matrix.hpp"
-#include "SoftRender/Math/Vec.hpp"
+#include "Math/Matrix.hpp"
+#include "Math/Vec.hpp"
 
 #include <stdint.h>
 #include <variant>

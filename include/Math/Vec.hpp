@@ -185,12 +185,12 @@ struct Vector3 : public Vector<T> {
     T& x() { return this->value[0]; }
     T& y() { return this->value[1]; }
     T& z() { return this->value[2]; }
-    Vector<T> cross(Vector<T> b)
+    Vector3<T> cross(Vector<T> b)
     {
         return {
-            { T(this->value[1] * b[2] - this->value[2] * b[1]),
-                T(this->value[2] * b[0] - this->value[0] * b[2]),
-                T(this->value[0] * b[1] - this->value[1] * b[0]) }
+            T(this->value[1] * b[2] - this->value[2] * b[1]),
+            T(this->value[2] * b[0] - this->value[0] * b[2]),
+            T(this->value[0] * b[1] - this->value[1] * b[0])
         };
     }
 };

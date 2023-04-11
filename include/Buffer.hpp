@@ -1,4 +1,5 @@
 #pragma once
+#include "Math/Vec.hpp"
 #include <cassert>
 #include <cstdint>
 #include <vector>
@@ -13,6 +14,7 @@ public:
     {
         data = std::move(_data);
     }
+    // Buffer(Vector<T> _data) { data = _data.value; }
     Buffer(uint32_t size, T* _data)
         : size(size)
         , mapped(true)
@@ -28,11 +30,16 @@ public:
     Buffer() = delete;
     ~Buffer() { }
     T& operator[](int index) { return data[index]; }
+    void add(std::vector<T> _data)
+    {
+        data.push_back(_data);
+        size = data.size();
+    }
     [[nodiscard]] auto& get(int index) { return data[index]; }
     [[nodiscard]] std::unique_ptr<Buffer> get_slice(int start, int end)
     {
         assert(start >= 0 && end <= get_size() && start <= end);
-      
+
         std::vector<T> res_data;
         for (int i = start; i < end; i++) {
             res_data.push_back(get(i));

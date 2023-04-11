@@ -1,4 +1,4 @@
-#include "SoftRender/Description.hpp"
+#include "Description.hpp"
 #include <vector>
 
 namespace SoftRender {

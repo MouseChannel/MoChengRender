@@ -1,5 +1,5 @@
 #pragma once
-// #include "SoftRender/Buffer.hpp"
+// #include "Buffer.hpp"
 #include <memory>
 namespace SoftRender {
 

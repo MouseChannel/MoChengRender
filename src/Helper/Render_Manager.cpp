@@ -1,15 +1,28 @@
-#include "SoftRender/Helper/Render_Manager.hpp"
-#include "SoftRender/Helper/Raster_Manager.hpp"
-#include "SoftRender/Shader.hpp"
-#include "SoftRender/Texture.hpp"
+#include "Helper/Render_Manager.hpp"
+#include "Helper/Raster_Manager.hpp"
+#include "Mesh.hpp"
+#include "Model.hpp"
+#include "Shader.hpp"
+#include "Texture.hpp"
 
 namespace SoftRender {
 RenderManager::RenderManager()
 {
     framebuffer.reset(new FrameBuffer(800, 600));
-    texture.reset(new Texture("D:/MoChengRender/Asset/goku.jpg"));
+    // texture.reset(new Texture("D:/MoChengRender/Asset/goku.jpg"));
 }
 RenderManager::~RenderManager() { }
+
+void RenderManager::bind_vertex_buffer(std::unique_ptr<Model> model)
+{
+    auto& mesh = model->get_mesh();
+    auto& position_buf = mesh->get_position_buf();
+    auto& uv_buf = mesh->get_uv_buf();
+    bind_vertex_buffer(Vertex_Buffer_Type::position, std::move(position_buf));
+    bind_vertex_buffer(Vertex_Buffer_Type ::uv, std::move(uv_buf));
+    VertexObjectArray::Get_Instance()->indices_count = mesh->get_indices();
+    texture = std::move(model->get_texture());
+}
 void RenderManager::bind_vertex_buffer(Vertex_Buffer_Type type,
     std::unique_ptr<VertexBuffers> buffers)
 {
@@ -33,7 +46,7 @@ void RenderManager::vertex_shader_stage()
 
 void RenderManager::clip()
 {
-    std::vector<Point3D> res;
+    std::vector<Vertex> res;
     for (int i = 0; i < points.size(); i += 3) {
         auto clip_res = sutherlandHodgman({ points[i], points[i + 1], points[i + 2] });
         if (clip_res.empty())
@@ -47,18 +60,18 @@ void RenderManager::clip()
     }
     points = res;
 }
-std::vector<Point3D> RenderManager::sutherlandHodgman(std::vector<Point3D> source)
+std::vector<Vertex> RenderManager::sutherlandHodgman(std::vector<Vertex> source)
 {
     assert(source.size() == 3);
     const static auto inside = [](Vector4<float> a, Vector4<float> b) {
         return a.dot(b) >= 0.0f;
     };
-    static const auto intersect = [](Point3D last, Point3D current,
+    static const auto intersect = [](Vertex last, Vertex current,
                                       Vector4<float> plane) {
         auto distance_last = last.pos.dot(plane);
         auto distance_current = current.pos.dot(plane);
         auto weight = distance_last / (distance_last - distance_current);
-        return Point3D {
+        return Vertex {
             .pos = math::lerp(last.pos, current.pos, weight),
             .color = math::lerp(last.color, current.color, weight),
             .uv = math::lerp(last.uv, current.uv, weight),
@@ -70,7 +83,7 @@ std::vector<Point3D> RenderManager::sutherlandHodgman(std::vector<Point3D> sourc
         { -1, 0, 0, -1 }, { 0, 1, 0, -1 }, { 0, -1, 0, -1 }
     };
 
-    std::vector<Point3D> cur = source;
+    std::vector<Vertex> cur = source;
     for (auto& plane : planes) {
 
         cur.clear();
@@ -102,19 +115,16 @@ void RenderManager::ndc()
     for (auto& point : points) {
         auto w = point.pos.w();
 
-#ifdef nusing_perspective_fix
+        // float low = -1.0f;
+        // float high = 1.0f;
         _points.emplace_back(std::pair {
-            Point3D { .pos = point.pos / w,
-                .color = point.color,
-                .uv = point.uv },
-            w });
-#else
-        _points.emplace_back(std::pair {
-            Point3D { .pos = point.pos / w,
+            Vertex { .pos { std::clamp((point.pos / w)[0], -1.0f, 1.0f),
+                         std::clamp((point.pos / w)[1], -1.0f, 1.0f),
+                         std::clamp((point.pos / w)[2], -1.0f, 1.0f),
+                         std::clamp((point.pos / w)[3], -1.0f, 1.0f) },
                 .color = point.color / w,
                 .uv = point.uv / w },
             w });
-#endif
     }
 }
 void RenderManager::screen_map(mat4f screen_matrix)
@@ -124,34 +134,40 @@ void RenderManager::screen_map(mat4f screen_matrix)
         point.pos = screen_matrix.mul(point.pos);
     }
 }
+bool RenderManager::cull_face(Vertex a, Vertex b, Vertex c)
+{
+    auto aa = a.pos - b.pos;
+    auto bb = b.pos - c.pos;
+    Vector3<float> aaa { aa[0], aa[1], aa[2] };
+
+    Vector3<float> bbb { bb[0], bb[1], bb[2] };
+    // return false;
+    return aaa.cross(bbb)[2] < 0.0f;
+}
 void RenderManager::raster()
 {
-    auto temp_a = points[0].pos;
 
-    auto temp_b = points[1].pos;
-
-    auto temp_c = points[2].pos;
-
-    Pixel a { .pos { (int)temp_a.x(), (int)temp_a.y() },
-        .color { points[0].color } };
-
-    Pixel b { .pos { (int)temp_b.x(), (int)temp_b.y() },
-        .color { points[1].color } };
-
-    Pixel c { .pos { (int)temp_c.x(), (int)temp_c.y() }, .color { points[2].color } };
-
-    _points = RasterManager::Get_Instance()->raster_triangle(_points[0], _points[1], _points[2]);
+    std::vector<std::pair<Vertex, float>> _res;
+    for (auto i = 0; i < _points.size(); i += 3) {
+        auto a = _points[i];
+        auto b = _points[i + 1];
+        auto c = _points[i + 2];
+        if (cull_face(a.first, b.first, c.first)) {
+            continue;
+        }
+        auto temp = RasterManager::Get_Instance()->raster_triangle(
+            a, b, c);
+        _res.insert(_res.end(), temp.begin(), temp.end());
+    }
+    _points = std::move(_res);
 }
 void RenderManager::perspective_fix()
 {
-#ifdef nusing_perspective_fix
-    return;
-#endif // !using_perspective_fix
 
     for (auto& _point : _points) {
         auto& point = _point.first;
         auto _w = _point.second;
-        RR temp { point.color.x(), point.color.y(), point.color.z(), point.color.w() };
+
         point.color
             = point.color * _w;
         point.uv = point.uv * _w;
@@ -161,7 +177,7 @@ void RenderManager::fragment_shader_stage()
 {
     fragments.clear();
     for (auto& _point : _points) {
-        // RR temp { _point.first.color.r(), _point.first.color.g(), _point.first.color.b(), _point.first.color.a() };
+
         fragments.emplace_back(fragment_shader_data->fragment_shader(_point.first, texture));
     }
     framebuffer->reset();

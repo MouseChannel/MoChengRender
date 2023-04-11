@@ -1,6 +1,6 @@
 #pragma once
-#include "SoftRender/Buffer.hpp"
-#include "SoftRender/Math/Math.hpp"
+#include "Buffer.hpp"
+#include "Math/Math.hpp"
 
 namespace SoftRender {
 struct RGBA {
