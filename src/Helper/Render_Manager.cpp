@@ -4,6 +4,7 @@
 #include "Model.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
+#include <algorithm>
 
 namespace SoftRender {
 RenderManager::RenderManager()

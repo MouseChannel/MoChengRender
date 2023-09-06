@@ -3,7 +3,7 @@
 #include <cassert>
 #include <cstdint>
 #include <vector>
-
+#include "memory"
 namespace SoftRender {
 template <typename T>
 class Buffer {

@@ -1,6 +1,7 @@
 #pragma once
 #include "Helper/ConstData.hpp"
 #include "Math/Vec.hpp"
+#include <memory>
 
 struct Position3D : public Vector3<float> {
 

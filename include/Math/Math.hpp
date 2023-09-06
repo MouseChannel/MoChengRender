@@ -5,14 +5,17 @@
 #include "Math/Matrix.hpp"
 #include "Math/Vec.hpp"
 
+#include <array>
+#include <memory>
 #include <stdint.h>
 #include <variant>
+
 template <typename T>
 concept LerpObject = requires(T a, T b, float weight) {
-                         a + b;
+    a + b;
 
-                         a* weight;
-                     };
+    a* weight;
+};
 class math {
 public:
     template <typename T>
